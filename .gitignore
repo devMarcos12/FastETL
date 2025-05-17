@@ -1,0 +1,35 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.env/
+.env.bak/
+.venv/
+
+# Distribution / packaging
+requirements.lock.bak
+
+# vscode settings
+.vscode/
+
+.pytest_cache/
+
+htmlcov/
+.coverage
+.coverage.*
+
+# mypy
+.mypy_cache/
+
+# Another temporary files
+*.log
+*.tmp
+
+# Credential files
+.env
+
+# Results of analysis
+reports/
