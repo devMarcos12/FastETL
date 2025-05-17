@@ -20,10 +20,6 @@ def load_product_predominant_profile(
         with mongo_context() as client:
             db = client[db_name]
             collection = db[collection_name]
-
-            data['loaded_at'] = datetime.now()
-            data['etl_version'] = '1.0.0'
-
             result = collection.insert_one(data)
             logger.info(f"Loaded predominant profile data. ID: {result.inserted_id}")
             return True
