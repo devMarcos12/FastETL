@@ -2,11 +2,11 @@
 
 A simple ETL agent that automates the extraction, transformation, and loading of supermarket data.
 
-### Description
+## Description
 
 FastETL is designed to simplify the ETL (Extract, Transform, Load) process for supermarket data, making automation of these steps straightforward and efficient. The project is written entirely in Python and uses uv for dependency management, ensuring reproducible environments and fast installations.
 
-### Installation
+## Installation
 
 First, create and activate a virtual environment (recommended):
 
@@ -34,7 +34,7 @@ Then, install the project dependencies:
 uv pip install -r pyproject.toml
   ```
 
-### Usage
+## Usage
 
 1. Create the .env file based on .env.example and configure it as needed.
 
