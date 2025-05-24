@@ -8,15 +8,30 @@ FastETL is designed to simplify the ETL (Extract, Transform, Load) process for s
 
 ### Installation
 
+First, create and activate a virtual environment (recommended):
+
+On Linux/macOS:
+
+  ```
+python3 -m venv .venv
+source .venv/bin/activate
+  ```
+
+On Windows:
+  ```
+python -m venv .venv
+.venv\Scripts\activate
+  ```
+
 First, install uv (if you don't have it yet):
   ```
-    pip install uv
+pip install uv
   ```
 
 Then, install the project dependencies:
 
   ```
-    uv pip install -r pyproject.toml
+uv pip install -r pyproject.toml
   ```
 
 ### Usage
