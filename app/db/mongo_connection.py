@@ -19,7 +19,7 @@ class MongoDBConnection:
 
     def __init__(self):
         if MongoDBConnection._instance is not None:
-            raise Exception("Esta classe é um singleton!")
+            raise Exception("This class is a singleton!")
         else:
             MongoDBConnection._instance = self
             self._connect()
@@ -29,15 +29,15 @@ class MongoDBConnection:
         uri = os.getenv('MONGODB_URI')
 
         if not uri:
-            logger.error("MONGODB_URI não encontrada nas variáveis de ambiente")
-            raise ValueError("MONGODB_URI não encontrada nas variáveis de ambiente")
+            logger.error("MONGODB_URI not found in environment variables")
+            raise ValueError("MONGODB_URI not found in environment variables")
 
         try:
             MongoDBConnection._client = MongoClient(uri, server_api=ServerApi('1'))
             MongoDBConnection._client.admin.command('ping')
-            logger.info("Conexão com MongoDB estabelecida.")
+            logger.info("Connection to MongoDB established successfully.")
         except Exception as e:
-            logger.error(f"Erro ao conectar ao MongoDB: {e}")
+            logger.error(f"Error connecting to MongoDB: {e}")
             raise
 
     @classmethod
@@ -46,7 +46,7 @@ class MongoDBConnection:
             cls._client.close()
             cls._client = None
             cls._instance = None
-            logger.info("Conexão com MongoDB fechada.")
+            logger.info("Connection to MongoDB closed.")
 
 @contextmanager
 def mongo_context():

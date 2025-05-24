@@ -121,7 +121,7 @@ def populate_vendas_e_itens(cur, num_vendas=200, max_itens=8):
             (valor_total, id_venda)
         )
 
-    print("Vendas e itens_venda populados com sucesso!")
+    print("Sales and sales_items populated successfully!")
 
 if __name__ == "__main__":
     conn = get_new_postgres_connection()

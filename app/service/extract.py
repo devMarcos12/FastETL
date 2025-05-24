@@ -65,3 +65,64 @@ def get_frequency_itemsets() -> List[Tuple[str, str, int]]:
     except Exception as e:
         logger.error(f"Error fetching frequency itemsets: {e}")
         raise
+
+def extract_orders_with_customers_and_items() -> list:
+    """
+    Fetch all complete orders (with customer and items).
+    """
+    try:
+        with dict_cursor() as cursor:  # Use dict_cursor para já retornar dicionários
+            cursor.execute('''
+                SELECT
+                    v.id,
+                    v.data_venda,
+                    v.valor_total,
+                    c.id as cliente_id,
+                    c.nome,
+                    c.email,
+                    c.gender,
+                    c.age
+                FROM vendas v
+                JOIN clientes c ON v.id_cliente = c.id
+                ORDER BY v.data_venda DESC  -- Ordenação para análise temporal
+            ''')
+            orders = cursor.fetchall()
+
+            # Buscar itens em lote para reduzir consultas ao banco
+            order_ids = [order['id'] for order in orders]
+            if not order_ids:
+                return []
+
+            # Busca todos os itens de uma vez
+            placeholders = ','.join(['%s'] * len(order_ids))
+            cursor.execute(f'''
+                SELECT
+                    iv.id_venda,
+                    p.id,
+                    p.nome,
+                    iv.quantidade,
+                    iv.preco_unitario,
+                    cat.nome as categoria
+                FROM itens_venda iv
+                JOIN produtos p ON iv.id_produto = p.id
+                LEFT JOIN categorias cat ON p.id_categoria = cat.id
+                WHERE iv.id_venda IN ({placeholders})
+            ''', order_ids)
+
+            # Organiza os itens por pedido
+            items_by_order = {}
+            for item in cursor.fetchall():
+                order_id = item.pop('id_venda')  # Remove e retorna o id_venda
+                if order_id not in items_by_order:
+                    items_by_order[order_id] = []
+                items_by_order[order_id].append(item)
+
+            # Adiciona os itens aos pedidos
+            for order in orders:
+                order['itens'] = items_by_order.get(order['id'], [])
+
+            logger.info(f"Fetched {len(orders)} orders with {sum(len(o['itens']) for o in orders)} items")
+            return orders
+    except Exception as e:
+        logger.error(f"Error fetching all orders: {e}")
+        raise

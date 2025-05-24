@@ -1,6 +1,5 @@
-from .extract import get_frequency_itemsets
 from datetime import datetime
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Any
 
 def age_range(age: int) -> str:
     """
@@ -73,7 +72,7 @@ def most_common_products(
     Returns the most common products bought together.
 
     Args:
-        data: Lista de tuplas contendo (produto1_nome, produto2_nome, frequencia)
+        data: List of tuples with (produto1_nome, produto2_nome, frequencia)
     """
     output = []
 
@@ -90,3 +89,48 @@ def most_common_products(
     }
 
     return result
+
+def transform_complete_orders_to_dw_format(orders: list) -> Dict[str, Any]:
+    """
+    Transform the complete orders data to the desired format for loading into the data warehouse.
+    """
+    from datetime import datetime
+
+    result = []
+
+    for order in orders:
+
+        categories = set(item.get('categoria') for item in order.get('itens', [])
+                         if item.get('categoria'))
+
+        transformed_order = {
+            'order_id': order['id'],
+            'order_date': order.get('data_venda').strftime("%Y-%m-%d") if order.get('data_venda') else None,
+            'categories': list(categories),
+            'customer': {
+                'id': order.get('cliente_id'),
+                'name': order.get('nome', ''),
+                'email': order.get('email', ''),
+                'gender': order.get('gender', ''),
+                'age': order.get('age', 0),
+                'age_group': age_range(order.get('age', 0))
+            },
+            'items': [
+                {
+                    'product_id': item.get('id'),
+                    'product_name': item.get('nome', ''),
+                    'category': item.get('categoria', ''),
+                    'quantity': item.get('quantidade', 0),
+                    'unit_price': item.get('preco_unitario', 0),
+                    'total_price': item.get('quantidade', 0) * item.get('preco_unitario', 0)
+                }
+                for item in order.get('itens', [])
+            ]
+        }
+        result.append(transformed_order)
+
+    return {
+        'processing_date': datetime.now().strftime("%Y-%m-%d"),
+        'processing_timestamp': datetime.now().isoformat(),
+        'data': result
+    }
