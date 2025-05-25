@@ -71,7 +71,7 @@ def extract_orders_with_customers_and_items() -> list:
     Fetch all complete orders (with customer and items).
     """
     try:
-        with dict_cursor() as cursor:  # Use dict_cursor para já retornar dicionários
+        with dict_cursor() as cursor:
             cursor.execute('''
                 SELECT
                     v.id,
@@ -88,12 +88,10 @@ def extract_orders_with_customers_and_items() -> list:
             ''')
             orders = cursor.fetchall()
 
-            # Buscar itens em lote para reduzir consultas ao banco
             order_ids = [order['id'] for order in orders]
             if not order_ids:
                 return []
 
-            # Busca todos os itens de uma vez
             placeholders = ','.join(['%s'] * len(order_ids))
             cursor.execute(f'''
                 SELECT
@@ -109,15 +107,13 @@ def extract_orders_with_customers_and_items() -> list:
                 WHERE iv.id_venda IN ({placeholders})
             ''', order_ids)
 
-            # Organiza os itens por pedido
             items_by_order = {}
             for item in cursor.fetchall():
-                order_id = item.pop('id_venda')  # Remove e retorna o id_venda
+                order_id = item.pop('id_venda')
                 if order_id not in items_by_order:
                     items_by_order[order_id] = []
                 items_by_order[order_id].append(item)
 
-            # Adiciona os itens aos pedidos
             for order in orders:
                 order['itens'] = items_by_order.get(order['id'], [])
 
